@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Pelato (Pelangi Toys) - Kalkulator Laba Shopee</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --orange:#FF6600;
+      --dark:#222;
+      --muted:#777;
+      --green:#1F8A4C;
+      --red:#D23F3F;
+      --card:#ffffff;
+      --bg:#fff7f0;
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--dark);-webkit-font-smoothing:antialiased}
+    .container{max-width:980px;margin:18px auto;padding:16px}
+
+    header{display:flex;gap:12px;align-items:center}
+    .logo{
+      width:56px;height:56px;border-radius:12px;background:linear-gradient(135deg,var(--orange),#ff8a33);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;box-shadow:0 6px 18px rgba(255,102,0,0.18)
+    }
+    .brand h1{margin:0;font-size:18px}
+    .brand p{margin:0;font-size:12px;color:var(--muted)}
+
+    main{margin-top:16px;display:grid;grid-template-columns:1fr 380px;gap:14px}
+
+    /* mobile first */
+    @media (max-width:900px){
+      main{grid-template-columns:1fr}
+    }
+
+    .card{background:var(--card);padding:14px;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,0.06)}
+    .form-group{display:flex;flex-direction:column;margin-bottom:12px}
+    label{font-size:13px;margin-bottom:6px;color:var(--dark);font-weight:600}
+    input[type="text"], input[type="number"], select{padding:12px 14px;border-radius:10px;border:1px solid #eee;font-size:15px}
+    .row{display:flex;gap:10px}
+    .row .col{flex:1}
+    .small{font-size:12px;color:var(--muted);margin-top:6px}
+
+    .checkbox-row{display:flex;align-items:center;gap:8px;margin-top:6px}
+    .btn-row{display:flex;gap:12px;margin-top:6px}
+    button{background:var(--orange);color:white;padding:12px 16px;border-radius:12px;border:0;font-weight:700;cursor:pointer;font-size:15px}
+    button.secondary{background:transparent;color:var(--orange);border:2px solid rgba(255,102,0,0.12)}
+
+    /* result card */
+    .result{display:flex;flex-direction:column;gap:10px}
+    .result-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed #f0f0f0}
+    .result-item strong{font-size:15px}
+    .muted{color:var(--muted);font-size:13px}
+
+    .value-black{color:var(--dark);font-weight:700}
+    .value-red{color:var(--red);font-weight:700}
+    .value-green{color:var(--green);font-weight:700}
+
+    .detail{padding-left:12px;margin-top:6px}
+    .detail .sub{display:flex;justify-content:space-between;padding:6px 0}
+
+    .fade-in{animation:fadeIn .36s ease both}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+    footer{margin-top:14px;text-align:center;color:var(--muted);font-size:13px}
+
+    .error{color:var(--red);font-size:12px;margin-top:6px}
+
+    /* helper for mobile big buttons */
+    .full{width:100%}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">TOY</div>
+      <div class="brand">
+        <h1>Pelato <span style="font-weight:500;color:var(--muted)">(Pelangi Toys)</span></h1>
+        <p>Kalkulator Hitung Laba Penjualan Shopee</p>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <form id="calcForm" autocomplete="off">
+          <div class="form-group">
+            <label>Harga Ecer (Rp)</label>
+            <input id="hargaEcer" type="text" inputmode="numeric" placeholder="Contoh: 15000">
+            <div class="error" id="err-hargaEcer"></div>
+          </div>
+
+          <div class="form-group">
+            <label>Harga Shopee (Rp)</label>
+            <input id="hargaShopee" type="text" inputmode="numeric" placeholder="Contoh: 25000">
+            <div class="error" id="err-hargaShopee"></div>
+          </div>
+
+          <div class="row">
+            <div class="col form-group">
+              <label>Flash Sale (%)</label>
+              <input id="flashSale" type="number" min="0" max="100" step="0.01" placeholder="Contoh: 20">
+              <div class="error" id="err-flashSale"></div>
+            </div>
+            <div class="col form-group">
+              <label>Voucher (Rp)</label>
+              <input id="voucher" type="text" inputmode="numeric" placeholder="Kosong jika tidak ada">
+              <div class="error" id="err-voucher"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Pilih Kategori Produk</label>
+            <select id="biayaAdmin">
+              <option value="0.08">Kategori A — 8.00%</option>
+              <option value="0.075">Kategori B — 7.50%</option>
+              <option value="0.0575">Kategori C — 5.75%</option>
+              <option value="0.0425">Kategori D — 4.25%</option>
+              <option value="0.025">Kategori E — 2.50%</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <div class="checkbox-row">
+              <input id="ongkirXtra" type="checkbox" checked>
+              <label for="ongkirXtra">Biaya Ongkir XTRA (centang jika mengikuti Layanan Ongkir XTRA)</label>
+            </div>
+            <div class="checkbox-row">
+              <input id="promoXtra" type="checkbox" checked>
+              <label for="promoXtra">Biaya Promo XTRA (centang jika mengikuti Layanan Promo XTRA)</label>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Biaya Proses Shopee (Rp)</label>
+            <input id="biayaProses" type="text" value="1250" readonly>
+          </div>
+
+          <div class="btn-row">
+            <button id="btnHitung" type="button" class="full">Hitung</button>
+            <button id="btnReset" type="button" class="secondary">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="card">
+        <div id="results" class="result">
+          <div style="display:none" id="emptyMsg" class="muted">Hasil akan tampil di sini setelah klik <strong>Hitung</strong>.</div>
+
+          <div id="outputArea" style="display:none" class="fade-in">
+            <div class="result-item"><span>1. Harga Coret</span><span id="out-hargaCoret" class="value-black">-</span></div>
+            <div class="result-item"><span>2. Voucher</span><span id="out-voucher" class="value-red">-</span></div>
+            <div class="result-item"><span>3. Total Biaya</span><span id="out-totalBiaya" class="value-red">-</span></div>
+
+            <div class="detail">
+              <div class="sub"><span>a) Biaya Admin</span><span id="out-biayaAdmin" class="value-red">-</span></div>
+              <div class="sub"><span>b) Biaya Layanan</span><span id="out-biayaLayanan" class="value-red">-</span></div>
+
+              <div style="padding-left:10px;margin-top:6px">
+                <div class="sub"><span>*Biaya Ongkir XTRA</span><span id="out-ongkirXtra" class="value-black">-</span></div>
+                <div class="sub"><span>*Biaya Promo XTRA</span><span id="out-promoXtra" class="value-black">-</span></div>
+              </div>
+
+              <div class="sub"><span>c) Biaya Proses Shopee</span><span id="out-biayaProses" class="value-red">-</span></div>
+            </div>
+
+            <div class="result-item"><span>4. Penghasilan</span><span id="out-penghasilan" class="value-green">-</span></div>
+            <div class="result-item"><span>5. Laba Harga Ecer</span><span id="out-laba" class="value-black">-</span></div>
+            <div class="result-item"><span>Persentase Laba Harga Ecer</span><span id="out-labaPct" class="value-black">-</span></div>
+
+            <div style="margin-top:10px" class="muted">
+              <strong>Rekomendasi Harga Shopee</strong>
+              <div id="out-rekomendasi" style="margin-top:6px;font-weight:700;color:var(--dark)">-</div>
+              <div style="font-size:12px;color:var(--muted);margin-top:4px">(Nilai dibulatkan kelipatan Rp100)</div>
+            </div>
+
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="muted">© 2025 Pelato (Pelangi Toys). All rights reserved.</footer>
+  </div>
+
+  <script>
+    // Utility: parse rupiah-like input to number
+    function parseRupiah(v){ if(v===undefined || v===null) return 0; v = String(v).replace(/[.,\sRp]/g,''); if(v==='') return 0; let n = Number(v); return isNaN(n)?0:n }
+    function formatRupiah(n){ n = Number(n)||0; const neg = n<0; n = Math.abs(Math.round(n)); const s = n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.'); return (neg?'- ':'') + 'Rp' + s }
+
+    const el = id => document.getElementById(id);
+
+    function validate(){
+      let ok = true;
+      ['hargaEcer','hargaShopee','flashSale'].forEach(id => el('err-'+id).textContent='');
+      const hargaEcer = parseRupiah(el('hargaEcer').value);
+      const hargaShopee = parseRupiah(el('hargaShopee').value);
+      const flashSale = parseFloat(el('flashSale').value || 0);
+      if(!hargaEcer){ el('err-hargaEcer').textContent='Harga Ecer wajib diisi dan lebih dari 0'; ok=false }
+      if(!hargaShopee){ el('err-hargaShopee').textContent='Harga Shopee wajib diisi dan lebih dari 0'; ok=false }
+      if(isNaN(flashSale) || flashSale<0 || flashSale>100){ el('err-flashSale').textContent='Masukkan flash sale antara 0 - 100'; ok=false }
+      return ok;
+    }
+
+    function hitung(){
+      if(!validate()) return;
+      const hargaEcer = parseRupiah(el('hargaEcer').value);
+      const hargaShopee = parseRupiah(el('hargaShopee').value);
+      const flashSale = parseFloat(el('flashSale').value || 0) / 100;
+      const voucher = parseRupiah(el('voucher').value);
+      const biayaAdminPct = parseFloat(el('biayaAdmin').value || 0);
+      const ongkirChecked = el('ongkirXtra').checked;
+      const promoChecked = el('promoXtra').checked;
+      const biayaProses = parseRupiah(el('biayaProses').value || 1250);
+
+      // Harga Coret
+      const hargaCoret = hargaShopee * (1 - flashSale);
+
+      // Sub Voucher
+      const subVoucher = hargaCoret - voucher;
+
+      // percentages
+      const ongkirPct = ongkirChecked ? 0.06 : 0;
+      const promoPct = promoChecked ? (voucher>0 ? 0.02 : 0.01) : 0;
+
+      // biaya components
+      const biayaAdmin = subVoucher * biayaAdminPct;
+      const biayaOngkir = subVoucher * ongkirPct;
+      const biayaPromo = subVoucher * promoPct;
+      const biayaLayanan = biayaOngkir + biayaPromo;
+      const totalBiaya = biayaAdmin + biayaLayanan + biayaProses;
+
+      const penghasilan = subVoucher - biayaAdmin - biayaOngkir - biayaPromo - biayaProses;
+      const laba = penghasilan - hargaEcer;
+
+      // percent laba relative to Harga Ecer (guard divide by zero)
+      const labaPct = hargaEcer? (laba / hargaEcer * 100) : 0;
+
+      // rekomendasi Harga Shopee untuk mendapatkan laba >= 0
+      // Solve: (HS*(1-FS)-V) * (1 - s) - P - Hecer >= 0
+      const s = (biayaAdminPct + ongkirPct + promoPct);
+      const denom = (1 - flashSale) * (1 - s);
+      let rekom = null;
+      if(denom <= 0){ rekom = null; }
+      else{
+        const neededHS = ( (voucher*(1 - s)) + biayaProses + hargaEcer ) / denom;
+        // round up to nearest 100
+        rekom = Math.ceil(neededHS / 100) * 100;
+      }
+
+      // show outputs
+      el('out-hargaCoret').textContent = formatRupiah(hargaCoret);
+      el('out-voucher').textContent = formatRupiah(voucher);
+      el('out-totalBiaya').textContent = formatRupiah(totalBiaya);
+      el('out-biayaAdmin').textContent = formatRupiah(biayaAdmin);
+      el('out-biayaLayanan').textContent = formatRupiah(biayaLayanan);
+      el('out-ongkirXtra').textContent = formatRupiah(biayaOngkir);
+      el('out-promoXtra').textContent = formatRupiah(biayaPromo);
+      el('out-biayaProses').textContent = formatRupiah(biayaProses);
+      el('out-penghasilan').textContent = formatRupiah(penghasilan);
+      el('out-laba').textContent = formatRupiah(laba);
+
+      // color rules
+      el('out-laba').className = laba>=0? 'value-green' : 'value-red';
+      el('out-labaPct').textContent = (isFinite(labaPct)? (labaPct.toFixed(2) + '%') : '-');
+      el('out-labaPct').className = laba>=0? 'value-green' : 'value-red';
+
+      if(rekom===null) el('out-rekomendasi').textContent = 'Tidak dapat dihitung (denominator nol atau negatif)';
+      else el('out-rekomendasi').textContent = formatRupiah(rekom);
+
+      // show/hide sections
+      el('emptyMsg').style.display='none';
+      el('outputArea').style.display='block';
+
+    }
+
+    function resetForm(){
+      document.getElementById('calcForm').reset();
+      el('biayaProses').value = '1250';
+      // clear errors
+      ['hargaEcer','hargaShopee','flashSale','voucher'].forEach(id=>el('err-'+id).textContent='');
+      // hide results
+      el('outputArea').style.display='none';
+      el('emptyMsg').style.display='block';
+      // clear outputs
+      ['out-hargaCoret','out-voucher','out-totalBiaya','out-biayaAdmin','out-biayaLayanan','out-ongkirXtra','out-promoXtra','out-biayaProses','out-penghasilan','out-laba','out-labaPct','out-rekomendasi'].forEach(id=>el(id).textContent='-');
+    }
+
+    document.getElementById('btnHitung').addEventListener('click', hitung);
+    document.getElementById('btnReset').addEventListener('click', resetForm);
+
+    // format input while typing for rupiah fields
+    ['hargaEcer','hargaShopee','voucher'].forEach(id => {
+      const input = el(id);
+      input.addEventListener('input', (e)=>{
+        const pos = input.selectionStart;
+        const raw = input.value.replace(/[Rp.\s]/g,'');
+        if(!raw) { input.value=''; return }
+        const num = Number(raw.replace(/[^0-9]/g,'')) || 0;
+        input.value = num.toLocaleString('id-ID');
+      });
+    });
+
+    // init
+    resetForm();
+  </script>
+</body>
+</html>
